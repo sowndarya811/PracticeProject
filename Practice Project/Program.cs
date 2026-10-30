@@ -1,3 +1,4 @@
+using PracticeProject.Middleware;
 using Scalar.AspNetCore;
 using PracticeProject.Services;
 
@@ -9,6 +10,8 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<IStudentService, StudentService>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -22,6 +25,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseExceptionHandler();
 
 app.MapControllers();
 
