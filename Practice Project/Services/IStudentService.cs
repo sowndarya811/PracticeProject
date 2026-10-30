@@ -1,20 +1,22 @@
 ﻿using PracticeProject.DTOs;
-using PracticeProject.Models;
 
-namespace PracticeProject.Services
+namespace PracticeProject.Services;
+
+public interface IStudentService
 {
-    public interface IStudentService
-    {
-        List<StudentDto> GetAllStudents();
+    Task<List<StudentDto>> GetAllStudentsAsync();
 
-        StudentDto? GetStudentById(int id);
+    Task<StudentDto?> GetStudentByIdAsync(int id);
 
-        StudentDto AddStudent(CreateStudentDto studentDto);
+    Task<StudentDto> AddStudentAsync(CreateStudentDto studentDto);
 
-        StudentDto? UpdateStudent(int id, UpdateStudentDto studentDto);
+    Task<StudentDto?> UpdateStudentAsync(
+        int id,
+        UpdateStudentDto studentDto);
 
-        bool DeleteStudent(int id);
+    Task<bool> DeleteStudentAsync(int id);
 
-        bool EmailExists(string email, int? id = null);
-    }
+    Task<bool> EmailExistsAsync(
+        string email,
+        int? excludeStudentId = null);
 }

@@ -15,16 +15,17 @@ public class StudentController : ControllerBase
 
     // GET: api/students
     [HttpGet]
-    public ActionResult<List<StudentDto>> GetAllStudents()
+    public async Task<ActionResult<List<StudentDto>>> GetAllStudents()
     {
-        return Ok(_studentService.GetAllStudents());
+        var students = await _studentService.GetAllStudentsAsync();
+
+        return Ok(students);
     }
 
     // GET: api/students/1
     [HttpGet("{id}")]
-    public ActionResult<StudentDto> GetStudentById(int id)
+    public async Task<ActionResult<StudentDto>> GetStudentById(int id)
     {
-        // Validate Student ID
         if (id <= 0)
         {
             return BadRequest(new
@@ -33,9 +34,9 @@ public class StudentController : ControllerBase
             });
         }
 
-        var student = _studentService.GetStudentById(id);
+        var student = await _studentService.GetStudentByIdAsync(id);
 
-        if (student == null)
+        if (student is null)
         {
             return NotFound(new
             {
@@ -48,10 +49,10 @@ public class StudentController : ControllerBase
 
     // POST: api/students
     [HttpPost]
-    public ActionResult<StudentDto> AddStudent(CreateStudentDto studentDto)
+    public async Task<ActionResult<StudentDto>> AddStudent(
+        CreateStudentDto studentDto)
     {
-        // Check duplicate email
-        if (_studentService.EmailExists(studentDto.Email))
+        if (await _studentService.EmailExistsAsync(studentDto.Email))
         {
             return Conflict(new
             {
@@ -59,7 +60,8 @@ public class StudentController : ControllerBase
             });
         }
 
-        var createdStudent = _studentService.AddStudent(studentDto);
+        var createdStudent =
+            await _studentService.AddStudentAsync(studentDto);
 
         return CreatedAtAction(
             nameof(GetStudentById),
@@ -69,11 +71,10 @@ public class StudentController : ControllerBase
 
     // PUT: api/students/1
     [HttpPut("{id}")]
-    public ActionResult<StudentDto> UpdateStudent(
+    public async Task<ActionResult<StudentDto>> UpdateStudent(
         int id,
         UpdateStudentDto studentDto)
     {
-        // Validate Student ID
         if (id <= 0)
         {
             return BadRequest(new
@@ -82,8 +83,9 @@ public class StudentController : ControllerBase
             });
         }
 
-        // Check duplicate email
-        if (_studentService.EmailExists(studentDto.Email, id))
+        if (await _studentService.EmailExistsAsync(
+            studentDto.Email,
+            id))
         {
             return Conflict(new
             {
@@ -91,9 +93,12 @@ public class StudentController : ControllerBase
             });
         }
 
-        var updatedStudent = _studentService.UpdateStudent(id, studentDto);
+        var updatedStudent =
+            await _studentService.UpdateStudentAsync(
+                id,
+                studentDto);
 
-        if (updatedStudent == null)
+        if (updatedStudent is null)
         {
             return NotFound(new
             {
@@ -106,9 +111,8 @@ public class StudentController : ControllerBase
 
     // DELETE: api/students/1
     [HttpDelete("{id}")]
-    public IActionResult DeleteStudent(int id)
+    public async Task<IActionResult> DeleteStudent(int id)
     {
-        // Validate Student ID
         if (id <= 0)
         {
             return BadRequest(new
@@ -117,7 +121,8 @@ public class StudentController : ControllerBase
             });
         }
 
-        var deleted = _studentService.DeleteStudent(id);
+        var deleted =
+            await _studentService.DeleteStudentAsync(id);
 
         if (!deleted)
         {
