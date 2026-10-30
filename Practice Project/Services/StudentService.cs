@@ -26,7 +26,8 @@ public class StudentService : IStudentService
             Id = s.Id,
             Name = s.Name,
             Email = s.Email,
-            Age = s.Age
+            Age = s.Age,
+            DepartmentName = s.Department?.DepartmentName
         }).ToList();
     }
 
@@ -105,7 +106,8 @@ public class StudentService : IStudentService
             Id = student.Id,
             Name = student.Name,
             Email = student.Email,
-            Age = student.Age
+            Age = student.Age,
+            DepartmentName = student.Department?.DepartmentName
         };
     }
 }

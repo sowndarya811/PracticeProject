@@ -21,6 +21,27 @@ namespace Practice_Project.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PracticeProject.Models.Department", b =>
+                {
+                    b.Property<int>("DepartmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentId"));
+
+                    b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("DepartmentId");
+
+                    b.HasIndex("DepartmentName")
+                        .IsUnique();
+
+                    b.ToTable("Departments");
+                });
+
             modelBuilder.Entity("PracticeProject.Models.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -30,6 +51,9 @@ namespace Practice_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -44,6 +68,8 @@ namespace Practice_Project.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("Email")
                         .IsUnique();
 
@@ -51,6 +77,20 @@ namespace Practice_Project.Migrations
                         {
                             t.HasCheckConstraint("CK_Students_Age", "[Age] >= 17 AND [Age] <= 60");
                         });
+                });
+
+            modelBuilder.Entity("PracticeProject.Models.Student", b =>
+                {
+                    b.HasOne("PracticeProject.Models.Department", "Department")
+                        .WithMany("Students")
+                        .HasForeignKey("DepartmentId");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("PracticeProject.Models.Department", b =>
+                {
+                    b.Navigation("Students");
                 });
 #pragma warning restore 612, 618
         }
