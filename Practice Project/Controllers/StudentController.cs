@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PracticeProject.DTOs;
-using PracticeProject.Models;
 using PracticeProject.Services;
 
 [ApiController]
@@ -16,33 +15,49 @@ public class StudentController : ControllerBase
 
     // GET: api/students
     [HttpGet]
-    public ActionResult<List<Student>> GetAllStudents()
+    public ActionResult<List<StudentDto>> GetAllStudents()
     {
         return Ok(_studentService.GetAllStudents());
     }
 
     // GET: api/students/1
     [HttpGet("{id}")]
-    public ActionResult<Student> GetStudentById(int id)
+    public ActionResult<StudentDto> GetStudentById(int id)
     {
+        // Validate Student ID
+        if (id <= 0)
+        {
+            return BadRequest(new
+            {
+                message = "Student ID must be greater than zero."
+            });
+        }
+
         var student = _studentService.GetStudentById(id);
 
         if (student == null)
-            return NotFound(new { message = "Student not found." });
+        {
+            return NotFound(new
+            {
+                message = "Student not found."
+            });
+        }
 
         return Ok(student);
     }
 
     // POST: api/students
     [HttpPost]
-    public ActionResult<Student> AddStudent(CreateStudentDto studentDto)
+    public ActionResult<StudentDto> AddStudent(CreateStudentDto studentDto)
     {
-        var student = new Student
+        // Check duplicate email
+        if (_studentService.EmailExists(studentDto.Email))
         {
-            Name = studentDto.Name,
-            Email = studentDto.Email,
-            Age = studentDto.Age
-        };
+            return Conflict(new
+            {
+                message = "A student with this email already exists."
+            });
+        }
 
         var createdStudent = _studentService.AddStudent(studentDto);
 
@@ -55,13 +70,36 @@ public class StudentController : ControllerBase
     // PUT: api/students/1
     [HttpPut("{id}")]
     public ActionResult<StudentDto> UpdateStudent(
-    int id,
-    UpdateStudentDto studentDto)
+        int id,
+        UpdateStudentDto studentDto)
     {
+        // Validate Student ID
+        if (id <= 0)
+        {
+            return BadRequest(new
+            {
+                message = "Student ID must be greater than zero."
+            });
+        }
+
+        // Check duplicate email
+        if (_studentService.EmailExists(studentDto.Email, id))
+        {
+            return Conflict(new
+            {
+                message = "Another student with this email already exists."
+            });
+        }
+
         var updatedStudent = _studentService.UpdateStudent(id, studentDto);
 
         if (updatedStudent == null)
-            return NotFound(new { message = "Student not found." });
+        {
+            return NotFound(new
+            {
+                message = "Student not found."
+            });
+        }
 
         return Ok(updatedStudent);
     }
@@ -70,10 +108,24 @@ public class StudentController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteStudent(int id)
     {
+        // Validate Student ID
+        if (id <= 0)
+        {
+            return BadRequest(new
+            {
+                message = "Student ID must be greater than zero."
+            });
+        }
+
         var deleted = _studentService.DeleteStudent(id);
 
         if (!deleted)
-            return NotFound(new { message = "Student not found." });
+        {
+            return NotFound(new
+            {
+                message = "Student not found."
+            });
+        }
 
         return NoContent();
     }
