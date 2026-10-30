@@ -1,77 +1,113 @@
-﻿using System.Xml.Linq;
+﻿using PracticeProject.DTOs;
 using PracticeProject.Models;
 
-namespace PracticeProject.Services;
-
-public class StudentService : IStudentService
+namespace PracticeProject.Services
 {
-    private readonly List<Student> _students = new()
+    public class StudentService : IStudentService
     {
-        new Student
+        private readonly List<Student> _students = new()
         {
-            Id = 1,
-            Name = "Arun",
-            Email = "arun@example.com",
-            Age = 21
-        },
-        new Student
+            new Student
+            {
+                Id = 1,
+                Name = "Sowndarya",
+                Email = "sowndarya@gmail.com",
+                Age = 21
+            },
+            new Student
+            {
+                Id = 2,
+                Name = "Priya",
+                Email = "priya@gmail.com",
+                Age = 22
+            }
+        };
+
+        private int _nextId = 3;
+
+        // GET: Get all students
+        public List<StudentDto> GetAllStudents()
         {
-            Id = 2,
-            Name = "Priya",
-            Email = "priya@example.com",
-            Age = 22
+            return _students.Select(s => new StudentDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Email = s.Email,
+                Age = s.Age
+            }).ToList();
         }
-    };
 
-    private int _nextId = 3;
+        // GET: Get student by ID
+        public StudentDto? GetStudentById(int id)
+        {
+            var student = _students.FirstOrDefault(s => s.Id == id);
 
-    // GET: Retrieve all students
-    public List<Student> GetAllStudents()
-    {
-        return _students;
-    }
+            if (student == null)
+                return null;
 
-    // GET: Retrieve student by ID
-    public Student? GetStudentById(int id)
-    {
-        return _students.FirstOrDefault(s => s.Id == id);
-    }
+            return new StudentDto
+            {
+                Id = student.Id,
+                Name = student.Name,
+                Email = student.Email,
+                Age = student.Age
+            };
+        }
 
-    // POST: Add a student
-    public Student AddStudent(Student student)
-    {
-        student.Id = _nextId++;
+        // POST: Add student
+        public StudentDto AddStudent(CreateStudentDto studentDto)
+        {
+            var student = new Student
+            {
+                Id = _nextId++,
+                Name = studentDto.Name,
+                Email = studentDto.Email,
+                Age = studentDto.Age
+            };
 
-        _students.Add(student);
+            _students.Add(student);
 
-        return student;
-    }
+            return new StudentDto
+            {
+                Id = student.Id,
+                Name = student.Name,
+                Email = student.Email,
+                Age = student.Age
+            };
+        }
 
-    // PUT: Update a student
-    public Student? UpdateStudent(int id, Student updatedStudent)
-    {
-        var existingStudent = GetStudentById(id);
+        // PUT: Update student
+        public StudentDto? UpdateStudent(int id, UpdateStudentDto studentDto)
+        {
+            var student = _students.FirstOrDefault(s => s.Id == id);
 
-        if (existingStudent == null)
-            return null;
+            if (student == null)
+                return null;
 
-        existingStudent.Name = updatedStudent.Name;
-        existingStudent.Email = updatedStudent.Email;
-        existingStudent.Age = updatedStudent.Age;
+            student.Name = studentDto.Name;
+            student.Email = studentDto.Email;
+            student.Age = studentDto.Age;
 
-        return existingStudent;
-    }
+            return new StudentDto
+            {
+                Id = student.Id,
+                Name = student.Name,
+                Email = student.Email,
+                Age = student.Age
+            };
+        }
 
-    // DELETE: Delete a student
-    public bool DeleteStudent(int id)
-    {
-        var student = GetStudentById(id);
+        // DELETE: Delete student
+        public bool DeleteStudent(int id)
+        {
+            var student = _students.FirstOrDefault(s => s.Id == id);
 
-        if (student == null)
-            return false;
+            if (student == null)
+                return false;
 
-        _students.Remove(student);
+            _students.Remove(student);
 
-        return true;
+            return true;
+        }
     }
 }

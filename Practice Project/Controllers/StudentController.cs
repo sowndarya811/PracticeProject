@@ -44,7 +44,7 @@ public class StudentController : ControllerBase
             Age = studentDto.Age
         };
 
-        var createdStudent = _studentService.AddStudent(student);
+        var createdStudent = _studentService.AddStudent(studentDto);
 
         return CreatedAtAction(
             nameof(GetStudentById),
@@ -54,14 +54,16 @@ public class StudentController : ControllerBase
 
     // PUT: api/students/1
     [HttpPut("{id}")]
-    public ActionResult<Student> UpdateStudent(int id, Student updatedStudent)
+    public ActionResult<StudentDto> UpdateStudent(
+    int id,
+    UpdateStudentDto studentDto)
     {
-        var student = _studentService.UpdateStudent(id, updatedStudent);
+        var updatedStudent = _studentService.UpdateStudent(id, studentDto);
 
-        if (student == null)
+        if (updatedStudent == null)
             return NotFound(new { message = "Student not found." });
 
-        return Ok(student);
+        return Ok(updatedStudent);
     }
 
     // DELETE: api/students/1
