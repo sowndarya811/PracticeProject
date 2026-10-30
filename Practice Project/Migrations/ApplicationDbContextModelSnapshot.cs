@@ -34,15 +34,23 @@ namespace Practice_Project.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Students", t =>
+                        {
+                            t.HasCheckConstraint("CK_Students_Age", "[Age] >= 17 AND [Age] <= 60");
+                        });
                 });
 #pragma warning restore 612, 618
         }
