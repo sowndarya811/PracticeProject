@@ -5,6 +5,13 @@ namespace PracticeProject.Services
 {
     public class StudentService : IStudentService
     {
+        private readonly ILogger<StudentService> _logger;
+
+        public StudentService(ILogger<StudentService> logger)
+        {
+            _logger = logger;
+        }
+
         private readonly List<Student> _students = new()
         {
             new Student
@@ -57,6 +64,10 @@ namespace PracticeProject.Services
         // POST: Add student
         public StudentDto AddStudent(CreateStudentDto studentDto)
         {
+            _logger.LogInformation(
+                "Adding student with email {Email}",
+                studentDto.Email);
+
             var student = new Student
             {
                 Id = _nextId++,
@@ -66,6 +77,10 @@ namespace PracticeProject.Services
             };
 
             _students.Add(student);
+
+            _logger.LogInformation(
+                "Student created successfully with ID {StudentId}",
+                student.Id);
 
             return new StudentDto
             {
