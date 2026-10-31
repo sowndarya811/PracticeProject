@@ -98,6 +98,19 @@ public class StudentService : IStudentService
             email,
             excludeStudentId);
     }
+    public async Task<List<StudentDto>> SearchStudentsByNameAsync(string search)
+    {
+        var students = await _repository.SearchByNameAsync(search);
+
+        return students.Select(s => new StudentDto
+        {
+            Id = s.Id,
+            Name = s.Name,
+            Email = s.Email,
+            Age = s.Age,
+            DepartmentName = s.Department?.DepartmentName
+        }).ToList();
+    }
 
     private static StudentDto MapToDto(Student student)
     {

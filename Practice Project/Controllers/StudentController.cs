@@ -13,7 +13,6 @@ public class StudentController : ControllerBase
         _studentService = studentService;
     }
 
-    // GET: api/students
     [HttpGet]
     public async Task<ActionResult<List<StudentDto>>> GetAllStudents()
     {
@@ -22,7 +21,19 @@ public class StudentController : ControllerBase
         return Ok(students);
     }
 
-    // GET: api/students/1
+    [HttpGet("search")]
+    public async Task<ActionResult<List<StudentDto>>> SearchStudents(
+        [FromQuery] string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            return BadRequest("Search term is required.");
+
+        var students =
+            await _studentService.SearchStudentsByNameAsync(key);
+
+        return Ok(students);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<StudentDto>> GetStudentById(int id)
     {
@@ -47,7 +58,6 @@ public class StudentController : ControllerBase
         return Ok(student);
     }
 
-    // POST: api/students
     [HttpPost]
     public async Task<ActionResult<StudentDto>> AddStudent(
         CreateStudentDto studentDto)
@@ -69,7 +79,6 @@ public class StudentController : ControllerBase
             createdStudent);
     }
 
-    // PUT: api/students/1
     [HttpPut("{id}")]
     public async Task<ActionResult<StudentDto>> UpdateStudent(
         int id,
@@ -109,7 +118,6 @@ public class StudentController : ControllerBase
         return Ok(updatedStudent);
     }
 
-    // DELETE: api/students/1
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteStudent(int id)
     {

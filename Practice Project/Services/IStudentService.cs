@@ -19,4 +19,6 @@ public interface IStudentService
     Task<bool> EmailExistsAsync(
         string email,
         int? excludeStudentId = null);
+
+    Task<List<StudentDto>> SearchStudentsByNameAsync(string search);
 }
